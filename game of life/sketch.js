@@ -1,5 +1,5 @@
 var filas, columnas;
-var ancho = 20;
+var ancho = 10;
 var grid = [];
 var next = [];
 var currentp;
@@ -57,60 +57,49 @@ function Cell(fila, columna, value) {
   }
 
   this.nextValue = function () {
-    var topLeft = grid[index(columna - 1, fila - 1)];
-    var top = grid[index(columna, fila - 1)];
-    var topRight = grid[index(columna + 1, fila - 1)];
+    var vecinos = calcularVecinos();
+    var newValue = determinarNuevoValorCell(vecinos);
+    return new Cell(fila, columna, newValue);
+  }
 
-    var right = grid[index(columna + 1, fila)];
-    var left = grid[index(columna - 1, fila)];
-
-    var bottomLeft = grid[index(columna - 1, fila + 1)];
-    var bottom = grid[index(columna, fila + 1)];
-    var bottomRight = grid[index(columna + 1, fila + 1)];
-
-    var vecinos = 0;
-    if (top) {
-      vecinos += top.value;
-    }
-    if (topLeft) {
-      vecinos += topLeft.value;
-
-    } if (topRight) {
-      vecinos += topRight.value;
-    }
-    if (right) {
-      vecinos += right.value;
-    }
-
-    if (left) {
-      vecinos += left.value;
-    }
-
-    if (bottom) {
-      vecinos += bottom.value;
-    }
-
-    if (bottomLeft) {
-      vecinos += bottomLeft.value;
-    }
-
-    if (bottomRight) {
-      vecinos += bottomRight.value;
-    }
-    console.log(vecinos);
+  function determinarNuevoValorCell(vecinos) {
     var newValue = 0;
     if (value === 0) {
       if (vecinos === 3) {
         newValue = 1;
       }
 
-    } else {
+    }
+    else {
       if (vecinos === 2 || vecinos === 3) {
         newValue = 1;
       }
 
     }
+    return newValue;
+  }
 
-    return new Cell(fila, columna, newValue);
+  function calcularVecinos() {
+    var values = [];
+    values.push(tryGetGridValueFor(columna - 1, fila - 1));
+    values.push(tryGetGridValueFor(columna, fila - 1));
+    values.push(tryGetGridValueFor(columna + 1, fila - 1));
+
+    values.push(tryGetGridValueFor(columna + 1, fila));
+    values.push(tryGetGridValueFor(columna - 1, fila));
+
+    values.push(tryGetGridValueFor(columna - 1, fila + 1));
+    values.push(tryGetGridValueFor(columna, fila + 1));
+    values.push(tryGetGridValueFor(columna + 1, fila - 1));
+    // console.log(values)
+    return values.reduce((a, b) => a + b, 0);
+  }
+
+  function tryGetGridValueFor(columna, fila) {
+    var cell = grid[index(columna, fila)];
+    if (cell) {
+      return cell.value
+    }
+    return 0;
   }
 }
